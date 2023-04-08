@@ -11,14 +11,17 @@ fun readApiKey(): String {
     return properties.getProperty("riotApiKey") ?: throw IllegalStateException("API key not found in config.properties")
 }
 
-fun outputLeaderboard(actId: String, size: String, startIndex: String) = runBlocking {
+suspend fun createLeaderboard(actId: String, size: String, startIndex: String): Map<String, LeaderboardInfo> = runBlocking {
     val leaderboard = fetchLeaderboard(readApiKey(), actId, size, startIndex)
 
-    // Print the leaderboard data with player names
+    val leaderboardInfo = mutableMapOf<String, LeaderboardInfo>()
+
     leaderboard.forEach { entry ->
         val playerName = entry.puuid?.let { getPlayerNameByPuuid(readApiKey(), it) }
-        println("${entry.leaderboardRank}. ${playerName ?: entry.puuid} - ${entry.rankedRating}")
+        leaderboardInfo[entry.puuid ?: ""] = LeaderboardInfo(entry.leaderboardRank, playerName ?: "", entry.rankedRating)
     }
+
+    leaderboardInfo.toMap()
 }
 
 fun main() = runBlocking {
@@ -26,5 +29,9 @@ fun main() = runBlocking {
     val size = "10"
     val startIndex = "0"
 
-    outputLeaderboard(actId, size, startIndex)
+    val leaderboardInfo = createLeaderboard(actId, size, startIndex)
+
+    leaderboardInfo.forEach { (_, info) ->
+        println("${info.rank}. ${info.name} - ${info.rankedRating}")
+    }
 }
