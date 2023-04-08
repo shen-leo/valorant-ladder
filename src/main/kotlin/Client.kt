@@ -1,3 +1,5 @@
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
 import java.io.InputStream
@@ -16,9 +18,13 @@ suspend fun createLeaderboard(actId: String, size: String, startIndex: String): 
 
     val leaderboardInfo = mutableMapOf<String, LeaderboardInfo>()
 
-    leaderboard.forEach { entry ->
-        val playerName = entry.puuid?.let { getPlayerNameByPuuid(readApiKey(), it) }
-        leaderboardInfo[entry.puuid ?: ""] = LeaderboardInfo(entry.leaderboardRank, playerName ?: "", entry.rankedRating)
+    leaderboard.map { entry ->
+        async {
+            val playerName = entry.puuid?.let { getPlayerNameByPuuid(readApiKey(), it) }
+            entry.puuid to LeaderboardInfo(entry.leaderboardRank, playerName ?: "", entry.rankedRating)
+        }
+    }.awaitAll().forEach { (puuid, info) ->
+        leaderboardInfo[puuid ?: ""] = info
     }
 
     leaderboardInfo.toMap()
