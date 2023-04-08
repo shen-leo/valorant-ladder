@@ -21,7 +21,7 @@ suspend fun getPlayerNameByPuuid(apiKey: String, puuid: String): String? {
         }
     }
 
-    val playerName: PlayerResponse? = try {
+    val playerName: Player? = try {
         client.get(apiUrl)
     } catch (e: Exception) {
         null

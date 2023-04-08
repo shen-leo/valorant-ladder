@@ -22,7 +22,7 @@ suspend fun fetchLeaderboard(apiKey: String, actId: String, size: String, startI
 
     val response: HttpResponse = client.get(apiUrl)
     val responseBody = response.readText()
-    val leaderboardResponse = json.decodeFromString(LeaderboardResponse.serializer(), responseBody)
+    val leaderboard = json.decodeFromString(Leaderboard.serializer(), responseBody)
     client.close()
-    return leaderboardResponse.entries
+    return leaderboard.entries
 }
