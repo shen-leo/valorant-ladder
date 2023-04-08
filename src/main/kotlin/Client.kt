@@ -11,11 +11,7 @@ fun readApiKey(): String {
     return properties.getProperty("riotApiKey") ?: throw IllegalStateException("API key not found in config.properties")
 }
 
-fun main() = runBlocking {
-    val actId = "97b6e739-44cc-ffa7-49ad-398ba502ceb0"
-    val size = "10"
-    val startIndex = "0"
-
+fun outputLeaderboard(actId: String, size: String, startIndex: String) = runBlocking {
     val leaderboard = fetchLeaderboard(readApiKey(), actId, size, startIndex)
 
     // Print the leaderboard data with player names
@@ -23,4 +19,12 @@ fun main() = runBlocking {
         val playerName = entry.puuid?.let { getPlayerNameByPuuid(readApiKey(), it) }
         println("${entry.leaderboardRank}. ${playerName ?: entry.puuid} - ${entry.rankedRating}")
     }
+}
+
+fun main() = runBlocking {
+    val actId = "97b6e739-44cc-ffa7-49ad-398ba502ceb0"
+    val size = "10"
+    val startIndex = "0"
+
+    outputLeaderboard(actId, size, startIndex)
 }
