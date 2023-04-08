@@ -1,0 +1,4 @@
+.gradle/*
+.ideal/*
+build/*
+src/main/resources/config.properties
