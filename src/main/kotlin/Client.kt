@@ -1,3 +1,4 @@
+
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
@@ -13,7 +14,7 @@ fun readApiKey(): String {
     return properties.getProperty("riotApiKey") ?: throw IllegalStateException("API key not found in config.properties")
 }
 
-suspend fun createLeaderboard(actId: String, size: String, startIndex: String): Map<String, LeaderboardInfo> = runBlocking {
+suspend fun createLeaderboard(actId: String?, size: String, startIndex: String): Map<String, LeaderboardInfo> = runBlocking {
     val leaderboard = fetchLeaderboard(readApiKey(), actId, size, startIndex)
 
     val leaderboardInfo = mutableMapOf<String, LeaderboardInfo>()
@@ -31,7 +32,7 @@ suspend fun createLeaderboard(actId: String, size: String, startIndex: String): 
 }
 
 fun main() = runBlocking {
-    val actId = "97b6e739-44cc-ffa7-49ad-398ba502ceb0"
+    val actId = getActId("src/main/resources/Acts.json", "EPISODE 5", "ACT 2")
     val size = "10"
     val startIndex = "0"
 
